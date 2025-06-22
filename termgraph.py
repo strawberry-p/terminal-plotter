@@ -6,7 +6,7 @@ yVals = [[20,10,50,40,100]]
 yMax = max(yVals[0])
 XDIST = 50 #available space for graph
 YCHAR = 5/3 #height:width for characters
-YDIST = 39
+YDIST = 36
 FULLCHAR = "#"
 horizontalSeparator = "="
 renderTable = []
@@ -17,7 +17,7 @@ yLabels = []
 yLabelPos = []
 yLabelLength = 0
 fileSeparator = ","
-debugLevel = 3 #set to 7 when long_write errors
+debugLevel = 7 #set to 7 when long_write errors
 customXLabels = False
 xLabelShift = 0
 def load_csv(filename):
@@ -56,6 +56,12 @@ def operation_2D(array2D,op=max):
 def reverseNorm(value,mode=0,base=10):
     if mode == 1:
         return math.sqrt(value*yMax**2)
+    elif mode == 2:
+        return (value*math.sqrt(yMax))**2
+    elif mode == 3:
+        return math.log(value*(base**yMax),base=base)
+    elif mode == 4:
+        return base**(value*log(yMax,base=base))
     else:
         return value*yMax
 def count_gap_place():
@@ -94,12 +100,13 @@ def halving(array,mult=0.5):
         array[i] = float(array[i])*mult
         i += 1
 def termgraph_prepare():
-    global yVals,xLabelShift,yMax,XDIST,YDIST
+    global yVals,xLabelShift,yMax,XDIST,YDIST,customXLabels,xLabels
     parser = argparse.ArgumentParser(description="CLI graph rendering")
     parser.add_argument("file", type=str, help="comma-separated values to plot, one set per each line")
     parser.add_argument("--y-label-fraction",type=int,default=4,help="Number of labels on the y axis")
-    parser.add_argument("--y-space",default=39,help="Character count for graph height")
-    parser.add_argument("--x-space",default=50,help="Character count for graph width")
+    parser.add_argument("--y-space",default=36,help="Character count for graph height")
+    parser.add_argument("--x-space",default=86,help="Character count for graph width")
+    parser.add_argument("--x-labels",default=False,help="Comma-separated labels")
     args = parser.parse_args()
     if args.file != "" and args.file != None :
         yVals = []
@@ -113,7 +120,20 @@ def termgraph_prepare():
     yMax = operation_2D(yVals,max)[0]
     XDIST = round(int(args.x_space))
     YDIST = round(int(args.y_space))
+    if not args.x_labels == False:
+        customXLabels = True
+        print("using custom label")
+    if False:
+        customXLabels = False
+        print("nevermind")
     count_gap_place()
+    if customXLabels:
+        xLabels = args.x_labels.split(",")
+    if len(xLabels) != len(gapPlace):
+        raise ValueError(f"xlabels {xLabels} of len {len(xLabels)} not the same as {len(gapPlace)}")
+    if debugLevel > 5:
+        print(f"xlabels {len(xLabels)} long, gapPlace {len(gapPlace)}")
+        time.sleep(1)
     make_y_label(args.y_label_fraction)
 if __name__ == "__main__":
     termgraph_prepare()
@@ -125,9 +145,8 @@ def long_write(input, xLastPos, yPos=len(renderTable)-1):
     if firstX >= 0:
         for i in range(len(strInput)):
             if debugLevel > 6:
-                print(renderTable[firstX+i])
                 print(f"y {yPos} firstX {firstX} i {i} last len {len(renderTable[firstX+i-1])} len {len(renderTable[firstX+i])}")
-            if renderTable[firstX+i][yPos] == " ":
+            if renderTable[firstX+i][yPos] == " ": #erroring with more lines to plot
                 
                 
                 renderTable[firstX+i][yPos] = strInput[i]
@@ -156,16 +175,17 @@ def init_render_table(xdist, ydist,nullchar=" ", yLabelOffset=0):
             else:
                 renderTable[yLabeli].append(nullchar)
         yLabeli += 1
-    for unoffset in range(xdist-yLabelOffset): #TBD: allocated space for y-descriptors on first few columns
+    for unoffset in range(xdist-yLabelOffset):
         i = unoffset+yLabelOffset
         renderTable.append([])
         for j in range(ydist):
             if j == ydist-2:
                 renderTable[i].append(horizontalSeparator)
             elif j == ydist-1:
-                if (i in gapPlace):
+                if (i-xLabelShift in gapPlace):
                     renderTable[i].append(nullchar) #long_write can not append
-                    long_write(xLabels[gapPlace.index(i)],xLastPos=i+xLabelShift,yPos=j)
+                    print(f"x label at i {i} j {j} xLabelOffset {xLabelShift}")
+                    long_write(xLabels[gapPlace.index(i-xLabelShift)],xLastPos=i,yPos=j) #removed -xLabelShift from xLastPos
                 else:
                     renderTable[i].append(nullchar)
             else:
@@ -179,8 +199,9 @@ def write_render_table():
     for i in range(len(renderTable[0])): #number of rows in first (all) columns
         for j in range(len(renderTable)):
             tempRow += str(renderTable[j][i])
-        print(tempRow)
-        tempRow = ""
+        if tempRow != "":
+            print(tempRow)
+            tempRow = ""
 def n_y(value, mode=0, base=10):
     if mode == 1:
         return (value**2)/(yMax**2) #square norming
