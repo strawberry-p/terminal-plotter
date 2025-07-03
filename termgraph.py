@@ -19,7 +19,7 @@ yLabels = []
 yLabelPos = []
 yLabelLength = 0
 fileSeparator = ","
-debugLevel = 9 #set to 7 when long_write errors
+debugLevel = 0 #set to 7 when long_write errors
 customXLabels = False
 xLabelShift = 0
 args = ()
@@ -136,8 +136,11 @@ def make_y_label(fraction=4):
     i = 1
     unitFrac = 1/fraction
     while i < fraction:
-        yLabels.append(round(reverseNorm(unitFrac*i)))
+        reverse = reverseNorm(unitFrac*i,anyMax=yMax)
+        yLabels.append(round(reverse))
         yLabelPos.append(round(YDIST*(1-unitFrac*i)))
+        if debugLevel > 5:
+            print(reverse)
         i += 1
     lengthDecider = []
     for i in yLabels:
@@ -156,7 +159,7 @@ def termgraph_prepare():
     parser.add_argument("file", type=str, help="comma-separated values to plot, one set per each line")
     parser.add_argument("--y-label-fraction",type=int,default=4,help="Number of labels on the y axis")
     parser.add_argument("--y-space",default=36,help="Character count for graph height")
-    parser.add_argument("--x-space",default=86,help="Character count for graph width")
+    parser.add_argument("--x-space",default=126,help="Character count for graph width")
     parser.add_argument("--x-labels",default=False,help="Comma-separated labels")
     parser.add_argument("--old-parse",action="store_true",default=False,help="Use new parsing function, each csv line is an entry")
     parser.add_argument("--csv-points",action="store_true",default=False,help="first column is X positions, render as points")
@@ -271,17 +274,26 @@ def bar_graph(vals=yVals[0],offset=0,xdist=XDIST,ydist=YDIST, gap=elementGap,onl
     gapPos = gap+offset #unused
     for iVal in range(len(vals)):
         iterVal = vals[iVal]
-        fracNormY = ydist*(1-n_y(iterVal,anyMax=yMax))
+        relative = n_y(iterVal,anyMax=yMax)
+        fracNormY = ydist*(1-relative)
         normY = round(fracNormY) #lowest y has highest index
+        if normY >= len(renderTable[0]):
+            print(f"clipping {normY} to {len(renderTable[0])}")
+            normY = len(renderTable[0])-1
+        normY -= 2 #termgraph_render decreases yMax too
+        if normY < 0:
+            print(f"clipping {normY} up")
+            normY = 0
         i = len(renderTable[0])-2 #space for separator+numbers
+        if debugLevel > 5:
+            print(f"bar {iVal} value {iterVal} norm {normY} frac {fracNormY} rel {relative}") 
         if onlyPoint == False:
             while i > normY:
                 i -= 1
                 renderTable[gapPlace[iVal]+offset][i] = FULLCHAR
         else:
             renderTable[gapPlace[iVal]+offset][normY] = FULLCHAR
-        if debugLevel > 5:
-            print(f"bar {iVal} value {iterVal} norm {normY} frac {fracNormY}") 
+
         #gapPos += 2*gap
 def termgraph_render():
     init_render_table(XDIST,YDIST,yLabelOffset=yLabelLength)
