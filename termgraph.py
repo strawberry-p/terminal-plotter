@@ -3,6 +3,7 @@ import os
 import time
 import argparse
 yVals = [[20,10,50,40,100]]
+xVals = []
 yMax = max(yVals[0])
 XDIST = 50 #available space for graph
 YCHAR = 5/3 #height:width for characters
@@ -130,13 +131,15 @@ def halving(array,mult=0.5):
         array[i] = float(array[i])*mult
         i += 1
 def termgraph_prepare():
-    global yVals,xLabelShift,yMax,XDIST,YDIST,customXLabels,xLabels
+    global yVals,xLabelShift,yMax,XDIST,YDIST,customXLabels,xLabels,xVals
     parser = argparse.ArgumentParser(description="CLI graph rendering")
     parser.add_argument("file", type=str, help="comma-separated values to plot, one set per each line")
     parser.add_argument("--y-label-fraction",type=int,default=4,help="Number of labels on the y axis")
     parser.add_argument("--y-space",default=36,help="Character count for graph height")
     parser.add_argument("--x-space",default=86,help="Character count for graph width")
     parser.add_argument("--x-labels",default=False,help="Comma-separated labels")
+    parser.add_argument("--new-parse",action="store_true",default=False,help="Use new parsing function, each csv line is an entry")
+    parser.add_argument("--csv-points",action="store_true",default=False,help="first column is X positions, render as points")
     args = parser.parse_args()
     if args.file != "" and args.file != None :
         yVals = []
