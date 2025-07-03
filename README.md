@@ -10,3 +10,10 @@ Plot ascii art-style graphs in your terminal!
 - Choice of different axis scaling methods (linear, logarithmic, quadratic...)
 - .csv input for easy data imports
 - Labels for x and y axis
+
+## Specific options:
+(these options are applicable to `termgraph.py` only)
+
+- `--old-parse` use old parsing (each line from the csv is a dataset of its own, new parsing has each new csv column as a dataset)
+- `--y-space` space available for graph output in characters
+- `--csv-points` only available with new parsing, shows exact points rather than bars in the graph output
