@@ -198,9 +198,9 @@ def termgraph_calc_begin():
         else:
             argsXSpace = ""
         if PYINSTALLER_COMPILED:
-            os.system(f"./termgraph --old-parse {argsXSpace} {argsXLabel} {arguments.file}")
+            os.system(f"./termgraph --old-parse --y-space 33 {argsXSpace} {argsXLabel} {arguments.file}")
         else:
-            os.system(f"python termgraph.py --old-parse {argsXSpace} {argsXLabel} {arguments.file}")
+            os.system(f"python termgraph.py --old-parse --y-space 33 {argsXSpace} {argsXLabel} {arguments.file}")
     print(f"\n")
 if __name__ == "__main__":
     termgraph_calc_begin()
