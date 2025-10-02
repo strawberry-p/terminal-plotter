@@ -4,6 +4,10 @@
 
 Plot ascii art-style graphs in your terminal!
 
+## Video demo:
+
+![Demo video showcasing the plotter function](https://github.com/strawberry-p/terminal-plotter/raw/refs/heads/main/demo.mp4)
+
 ## Features:
 
 - Adjustable dimensions for the plotted graph
