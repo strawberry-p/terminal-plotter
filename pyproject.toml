@@ -12,5 +12,7 @@ readme = "CALC_README.md"
 requires-python = ">=3.8"
 dependencies = ["argparse>=1.3.0"]
 [project.scripts]
-termgraph = "termgraph:app"
-termgraph-calc = "termgraph_calc:termgraph_calc_begin"
+termgraph = "hc_term_graph.termgraph:app"
+termgraph-calc = "hc_term_graph.termgraph_calc:termgraph_calc_begin"
+[tool.uv.build-backend]
+module-root = ""
