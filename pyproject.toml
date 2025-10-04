@@ -1,7 +1,16 @@
+[build-system]
+requires = ["uv_build >= 0.8.17, <1.0.0"]
+build-backend = "uv_build"
 [project]
-name = "termgraph2"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
+name = "hc-term-graph"
+version = "1.0.0"
+authors = [{name = "strawberry-t"}]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+description = "A CLI tool for displaying simple bar graphs from an equation or a csv file"
+readme = "CALC_README.md"
+requires-python = ">=3.8"
+dependencies = ["argparse>=1.3.0"]
+[project.scripts]
+termgraph = "termgraph:app"
+termgraph-calc = "termgraph_calc:termgraph_calc_begin"

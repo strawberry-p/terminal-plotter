@@ -1,11 +1,7 @@
 USE_ARGPARSE = True #doesnt work as False
 USE_OS = True
 PYINSTALLER_COMPILED = False
-if USE_ARGPARSE:
-    import argparse
-    parser = argparse.ArgumentParser()
-else:
-    parser = ()
+import argparse
 STARTBRACKET = "("
 ENDBRACKET = ")"
 def find_bracket(string, beginBracket="(", endBracket=")", skip=0, stringID=0):
@@ -149,6 +145,7 @@ def getArg(argname,arguments=()): #do not use, it doesn't work :(
     else:
         return input(f"Choose {argname}:\n")
 def termgraph_calc_begin():
+    parser = argparse.ArgumentParser()
     if USE_ARGPARSE:
         parser.add_argument("--function",type=str,default="x*x/4",help="your function, allowed operators are + - * /")
         parser.add_argument("--x-offset",default=0,type=float)

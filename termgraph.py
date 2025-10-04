@@ -313,3 +313,7 @@ def termgraph_render():
     write_render_table()
 if __name__ == "__main__":
     termgraph_render()
+
+def app():
+    termgraph_prepare()
+    termgraph_render()
